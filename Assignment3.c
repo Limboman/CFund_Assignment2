@@ -11,7 +11,7 @@ void display_login (login_t del_login);
 void encrypt_line ();
 void decrypt_line ();
 void compress_db ();
-void decompres_db ():
+void decompres_db ();
 void save_db ();
 void load_db ();
 
