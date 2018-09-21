@@ -1,4 +1,38 @@
 /*******************************************************************************
+ * 48430 Fundamentals of C Programming - Assignment 3
+ * Name: Cameron Leedman
+ * Student ID: 10460285
+ * Date of submission: 
+ * 
+*******************************************************************************/
+
+/*******************************************************************************
+ * List header files
+*******************************************************************************/
+#include <stdio.h> /* printf, scanf, fopen, fclose, fprintf, fscanf */
+#include <string.h> /* strcmp,  strlen*/
+#include <stdlib.h>
+
+/*******************************************************************************
+ * List structs
+*******************************************************************************/
+struct date_time
+{
+    int month;
+    int day;
+    int hour;
+    int minute;
+}; typedef struct date_time date_time_t;
+
+struct flight
+{
+    char flightcode[MAX_FLIGHTCODE_LEN+1];
+    date_time_t departure_dt;
+    char arrival_city[MAX_CITYCODE_LEN+1];
+    date_time_t arrival_dt;
+}; typedef struct flight flight_t;
+
+/*******************************************************************************
  * Function prototypes
 *******************************************************************************/
 char ** user_initialisation (char mast_pw[], char db_location[]);
