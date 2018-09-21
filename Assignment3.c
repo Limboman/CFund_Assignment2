@@ -16,21 +16,14 @@
 /*******************************************************************************
  * List structs
 *******************************************************************************/
-struct date_time
+struct login
 {
-    int month;
-    int day;
-    int hour;
-    int minute;
-}; typedef struct date_time date_time_t;
-
-struct flight
-{
-    char flightcode[MAX_FLIGHTCODE_LEN+1];
-    date_time_t departure_dt;
-    char arrival_city[MAX_CITYCODE_LEN+1];
-    date_time_t arrival_dt;
-}; typedef struct flight flight_t;
+    char name[];
+    char desc[];
+    char login[];
+    char pw[];
+    
+}; typedef struct login login_t;
 
 /*******************************************************************************
  * Function prototypes
