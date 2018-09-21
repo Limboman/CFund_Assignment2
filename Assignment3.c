@@ -1,19 +1,19 @@
 /*******************************************************************************
  * Function prototypes
 *******************************************************************************/
-char * user_initialisation (char mast_pw[], char db_location[]);
+char ** user_initialisation (char mast_pw[], char db_location[]);
 void print_main_menu ();
 login_t add_login ();
 login_t modify_login (login_t mod_login);
 void delete_login (login_t del_login);
 void find_login(char seach[]);
 void display_login (login_t del_login);
-void encrypt_line ();
-void decrypt_line ();
-void compress_db ();
-void decompres_db ();
-void save_db ();
-void load_db ();
+char ** encrypt_line (char line[], char key[]);
+char ** decrypt_line (char line[], char key[]);
+void compress_db (char db_location[]);
+void decompres_db (char db_location[]);
+void save_db (char db_location[], login_t del_login[]);
+login_t load_db (char db_location[], login_t del_login[]);
 
 /*******************************************************************************
  * Author: Bennett
@@ -65,7 +65,7 @@ login_t add_login ()
  * outputs:
  * - login structure variable
 *******************************************************************************/
-login_t modify_login (login_t mod_login)
+login_t modify_login (login_t mod_login[])
 {
 	
 }
@@ -78,7 +78,7 @@ login_t modify_login (login_t mod_login)
  * outputs:
  * - none
 *******************************************************************************/
-void delete_login (login_t del_login)
+void delete_login (login_t del_login[])
 {
 	
 }
@@ -104,7 +104,7 @@ void find_login(char seach[])
  * outputs:
  * - none
 *******************************************************************************/
-void display_login (login_t del_login)
+void display_login (login_t del_login[])
 {
 	
 }
@@ -117,7 +117,7 @@ void display_login (login_t del_login)
  * outputs:
  * - encrypted string
 *******************************************************************************/
-void encrypt_line ()
+char * encrypt_line (char line[], char key[])
 {
 	
 }
@@ -130,7 +130,7 @@ void encrypt_line ()
  * outputs:
  * - string
 *******************************************************************************/
-void decrypt_line ()
+char * decrypt_line (char line[], char key[])
 {
 	
 }
@@ -143,7 +143,7 @@ void decrypt_line ()
  * outputs:
  * - none
 *******************************************************************************/
-void compress_db ()
+void compress_db (char db_location[])
 {
 	
 }
@@ -156,7 +156,7 @@ void compress_db ()
  * outputs:
  * - none
 *******************************************************************************/
-void decompres_db ()
+void decompres_db (char db_location[])
 {
 	
 }
@@ -169,7 +169,7 @@ void decompres_db ()
  * outputs:
  * - none
 *******************************************************************************/
-void save_db ()
+void save_db (char db_location[], login_t del_login[])
 {
 	
 }
@@ -182,7 +182,7 @@ void save_db ()
  * outputs:
  * - login array
 *******************************************************************************/
-void load_db ()
+login_t load_db (char db_location[], login_t del_login[])
 {
 	
 }
