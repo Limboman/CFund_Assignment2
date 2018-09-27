@@ -29,19 +29,29 @@ struct login
 /*******************************************************************************
  * Function prototypes
 *******************************************************************************/
-char ** user_initialisation (char mast_pw[], char db_location[]);
+char* user_initialisation (char mast_pw[], char db_location[]);
 void print_main_menu ();
 login_t add_login ();
 login_t modify_login (login_t mod_login);
 void delete_login (login_t del_login);
 void find_login(char seach[]);
 void display_login (login_t del_login);
-char ** encrypt_line (char line[], char key[]);
-char ** decrypt_line (char line[], char key[]);
+char* encrypt_line (char line[], char key[]);
+char* decrypt_line (char line[], char key[]);
 void compress_db (char db_location[]);
 void decompres_db (char db_location[]);
 void save_db (char db_location[], login_t del_login[]);
 login_t load_db (char db_location[], login_t del_login[]);
+
+
+/*******************************************************************************
+ * Main
+*******************************************************************************/
+
+int main(void)
+{
+
+}
 
 /*******************************************************************************
  * Author: Bennett
@@ -53,7 +63,7 @@ login_t load_db (char db_location[], login_t del_login[]);
  * - pointer to char array of first line of DB
 *******************************************************************************/
 
-char * user_initialisation (char mast_pw[], char db_location[])
+char* user_initialisation (char mast_pw[], char db_location[])
 { 
 int utpyold,utypnew;	
 printf("1.Old user\n2.New user");
