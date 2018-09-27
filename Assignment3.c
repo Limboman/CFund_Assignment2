@@ -49,6 +49,7 @@ login_t load_db (char db_location[], login_t del_login[]);
  * inputs:
  * - master password
  * - database location
+ hello
  * outputs:
  * - pointer to char array of first line of DB
 *******************************************************************************/
