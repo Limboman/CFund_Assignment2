@@ -54,9 +54,28 @@ login_t load_db (char db_location[], login_t del_login[]);
 *******************************************************************************/
 
 char * user_initialisation (char mast_pw[], char db_location[])
-{
-
+{ 
+int utpyold,utypnew;	
+printf("1.Old user\n2.New user");
+scanf("%d %d",&utpyold,&utypnew);
+/**/
+if(utpyold==1){
+/* if databases for storing user data exist print these*/
+	printf("1.Enter a database location");
+	printf("2.Enter the master password");
+    /*check if inut matches stored data*/
+	scanf("%c",[]);
+	scanf("%c",[]);
 }
+else {
+	printf("Incorrect input try again!") 
+	/* add option to try again, until the user selects the right option.*/;}
+}
+if(utypnew==2){ 
+	/*take them to create a login stage*/
+	;}
+else {/*stay on intial menu and ask for correct input.*/;}	
+
 
 /*******************************************************************************
  * Author: Daniel
