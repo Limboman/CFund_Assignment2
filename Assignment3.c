@@ -35,7 +35,7 @@ login_t add_login ();
 login_t modify_login (login_t mod_login);
 void delete_login (login_t del_login);
 void find_login(char seach[]);
-void display_login (login_t del_login);
+void display_login (login_t disp_login);
 char* encrypt_line (char line[], char key[]);
 char* decrypt_line (char line[], char key[]);
 void compress_db (char db_location[]);
@@ -187,10 +187,15 @@ void find_login(char seach[], login* logins_LL)
  * outputs:
  * - none
 *******************************************************************************/
-void display_login (login_t del_login[])
+void display_login (login_t disp_login)
 {
-	
+    printf("%s\n", );
+    printf("1: Name: %s \n", &disp_login.name);
+    printf("2: Description: %s \n", &disp_login.desc);
+    printf("3: Username: %s \n", &disp_login.user);
+    printf("4: Password: %s \n", &disp_login.pw);
 }
+
 
 /*******************************************************************************
  * Author: Cameron
