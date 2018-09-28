@@ -49,7 +49,7 @@ void compress_db (char db_location[]);
 void decompres_db (char db_location[]);
 void save_db (char db_location[], login_t del_login[]);
 login_t load_db (char db_location[], login_t del_login[]);
-
+int valid_input (char input[]);
 
 /*******************************************************************************
  * Main
