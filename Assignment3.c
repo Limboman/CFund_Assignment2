@@ -167,23 +167,27 @@ void delete_login (login_t del_login[])
  * outputs:
  * - none
 *******************************************************************************/
-void find_login(char seach[], login* logins_LL)
+void find_login(char seach[], login_t* logins_LL)
 {
-	login_t* temp_login;
-	temp_login = (login_t *) malloc(sizeof(login_t));
+    login_t* temp_login;
+    temp_login = (login_t *) malloc(sizeof(login_t));
 
-	for(temp_login=logins_LL;temp_login!=NULL; temp_login=temp_login->login_n)
-	{
-		if(*temp_login.name == seach)
-		{
+    display_login(*temp_login, 1);
+    for(temp_login=logins_LL;temp_login!=NULL; temp_login=temp_login->login_n)
+    {
+        if(strcmp(temp_login->name, seach) == 0)
+        {
+            display_login(*temp_login, 0);
 
-		}
+        }
 
-	}
+    }
 
 
-	free(temp_login);
-	temp_login = NULL;
+    free(temp_login);
+    temp_login = NULL;
+    return;
+
 }
 
 /*******************************************************************************
