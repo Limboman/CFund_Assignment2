@@ -120,17 +120,72 @@ void print_main_menu ()
 *******************************************************************************/
 login_t add_login ()
 {
-	login_t = add;
-	printf("Enter name for where password will be used\n");
-	fgets(add.name, 10000, stdin);	
-	printf("Enter description for password\n");	
-	fgets(add.desc, 10000, stdin);	
-	printf("Enter Username\n");
-	fgets(add.login, 10000, stdin);
-	printf("Enter password\n");
-	fgets(add.pw, 10000, stdin);
+    login_t = add;
+    int i = 0;
+    while (i < 5)
+    {
+   	 while (i < 5)
+   	 {
+   	 printf("Enter name for where password will be used\n");
+   	 fgets(add.name, 10000, stdin);
+   	 if (valid_input(add.name) = 1);
+   	 {
+   		 i = i + 1;
+   	 }
+   	 else
+   	 {
+   		 break;
+   	 }
+   	 }
+   	 while (i < 5)
+   	 {
+   	 printf("Enter description for password\n");    
+   	 fgets(add.desc, 10000, stdin);
+   	 if (valid_input(add.desc) = 1);
+   	 {
+   	 i = i + 1;
+   	 }    
+   	 else
+   	 {
+   		 break;
+   	 }
+   	 }
+   	 while (i < 5)
+   	 {
+   	 printf("Enter Username\n");
+   	 fgets(add.user, 10000, stdin);
+   	 if (valid_input(add.user) = 1);
+   	 {
+   		 i = i + 1;
+   	 }
+   	 else
+   	 {
+   		 break;
+   	 }
+   	 }
+   	 while (i < 5)
+   	 {
+   	 printf("Enter password\n");
+   	 fgets(add.pw, 10000, stdin);
+   	 if (valid_input(add.pw) = 1);
+   	 {
+   		 i = i + 1;
+   	 }
+   	 else
+   	 {
+   		 break;
+   	 }
+   	 break;
+   	 }
+    if (i = 5)
+    {
+   	 printf("You have entered too many invalid inputs\n");
+    }
+    }
+    return add;
 
 }
+
 
 /*******************************************************************************
  * Author: Daniel
@@ -141,10 +196,66 @@ login_t add_login ()
  * outputs:
  * - login structure variable
 *******************************************************************************/
-login_t modify_login (login_t mod_login[])
+login_t modify_login (login_t mod_login)
 {
-	
+
+    display_login(mod_login)
+    printf("5: Quit\n");
+
+    printf("Select number to modify details\n");
+    scanf("%d", &select);
+
+    char input[100]
+    int i=0;
+    while(i != 0);
+    {
+   	 switch(select)
+   	 {
+   	 case 1:
+   		 printf("Enter new Name\n");
+   		 fgets(input, 10000, stdin);
+   		 if (valid_input == 0)
+   		 {
+   			 strcpy(mod_login.name, input);
+   		 }
+   		 break;
+
+   	 case 2:
+   		 printf("Enter new Description\n");
+   		 fgets(input, 10000, stdin);
+   		 if (valid_input == 0)
+   		 {
+   			 strcpy(mod_login.desc, input);
+   		 }
+   		 break;
+
+   	 case 3:
+   		 printf("Enter new Username\n");
+   		 fgets(input, 10000, stdin);
+   		 if (valid_input == 0)
+   		 {
+   			 strcpy(mod_login.user, input);
+   		 }
+   		 break;
+
+   	 case 4:
+   		 printf("Enter new Password\n");
+   		 fgets(input, 10000, stdin);
+   		 if (valid_input == 0)
+   		 {
+   			 strcpy(mod_login.pw, input);
+   		 }
+   		 break;
+
+   	 case 5:
+   		 i = 1;
+   		 break;
+   	 }
+    }
+    return mod_login;
+    
 }
+
 
 /*******************************************************************************
  * Author: Bennett
@@ -163,7 +274,7 @@ void delete_login (login_t del_login[])
  * Author: Cameron
  * This function returns any number of logins that match a search paramater
  * inputs:
- * - search parameter
+ * - search parameter, pointer to logins link list
  * outputs:
  * - none
 *******************************************************************************/
@@ -336,4 +447,34 @@ void save_db (char db_location[], login_t del_login[])
 login_t load_db (char db_location[], login_t del_login[])
 {
 	
+}
+
+/*******************************************************************************
+ * Author: Daniel
+ * This function checks to see if the char input only contains valid chars
+ * inputs:
+ * - char array
+ * outputs:
+ * - 1 for valid 0 for invalid
+*******************************************************************************/
+
+int valid_input (char input[])
+{
+    int length = strlen(input);
+    int i = 0;
+    int flag = 0;
+    while (i < length - 1);
+    {
+   	 if (input[i] < 31 || input[i] > 127)
+   	 {
+   		 flag = 1;
+   		 break
+   	 }
+    i = i + 1;
+    }
+    if (flag == 1)
+    {
+   	 printf("Invalid input\n");
+    }
+    return flag;
 }
