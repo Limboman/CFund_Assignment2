@@ -14,17 +14,24 @@
 #include <stdlib.h>
 
 /*******************************************************************************
+ * Preprocessing directives
+*******************************************************************************/
+
+#define MAX_STR_LEN 60
+
+/*******************************************************************************
  * List structs
 *******************************************************************************/
 struct login
 {
-    char name[];
-    char desc[];
-    char login[];
-    char pw[];
+    char name[MAX_STR_LEN];
+    char desc[MAX_STR_LEN];
+    char user[MAX_STR_LEN];
+    char pw[MAX_STR_LEN];
     struct login* login_n;
 
 }; typedef struct login login_t;
+
 
 /*******************************************************************************
  * Function prototypes
@@ -35,7 +42,7 @@ login_t add_login ();
 login_t modify_login (login_t mod_login);
 void delete_login (login_t del_login);
 void find_login(char seach[]);
-void display_login (login_t disp_login);
+void display_login (login_t disp_login, int header);
 char* encrypt_line (char line[], char key[]);
 char* decrypt_line (char line[], char key[]);
 void compress_db (char db_location[]);
@@ -187,13 +194,65 @@ void find_login(char seach[], login* logins_LL)
  * outputs:
  * - none
 *******************************************************************************/
-void display_login (login_t disp_login)
+void display_login (login_t disp_login, int header)
 {
-    printf("%s\n", );
-    printf("1: Name: %s \n", &disp_login.name);
-    printf("2: Description: %s \n", &disp_login.desc);
-    printf("3: Username: %s \n", &disp_login.user);
-    printf("4: Password: %s \n", &disp_login.pw);
+    char name_spaces[(11) - strlen(disp_login.name)];
+    char desc_spaces[(19) - strlen(disp_login.desc)];
+    char user_spaces[(19) - strlen(disp_login.user)];
+    char pw_spaces[(25) - strlen(disp_login.pw)];
+    int ii;
+    
+    for(ii=0;ii<((10) - strlen(disp_login.name));ii++)
+    {
+        name_spaces[ii] = ' ';
+    }
+    name_spaces[ii] = '\0';
+    
+    for(ii=0;ii<((18) - strlen(disp_login.desc));ii++)
+    {
+        desc_spaces[ii] = ' ';
+    }
+    desc_spaces[ii] = '\0';
+    
+    for(ii=0;ii<((18) - strlen(disp_login.user));ii++)
+    {
+        user_spaces[ii] = ' ';
+    }
+    user_spaces[ii] = '\0';
+    
+    for(ii=0;ii<((24) - strlen(disp_login.pw));ii++)
+    {
+        pw_spaces[ii] = ' ';
+    }
+    pw_spaces[ii] = '\0';
+    
+    
+    if(header == 1)
+    {
+        printf("\n");
+        printf("###############################################################"
+        "################\n");
+        printf("# Name      # Desc              # Login             # Password"
+        "                #\n");
+        printf("###############################################################"
+        "################\n");
+
+    }
+    else
+    {
+        printf("# %s", disp_login.name);
+        printf("%s", name_spaces);
+        printf("# %s", disp_login.desc);
+        printf("%s", desc_spaces);
+        printf("# %s", disp_login.user);
+        printf("%s", user_spaces);
+        printf("# %s", disp_login.pw);
+        printf("%s", pw_spaces);
+        printf("#\n");
+    }
+    
+    
+    return;
 }
 
 
