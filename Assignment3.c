@@ -218,6 +218,7 @@ login_t* add_login ()
             printf("You have entered too many invalid inputs\n");
         }
     }
+    add->login_n = NULL;
     return add;
 
 }
