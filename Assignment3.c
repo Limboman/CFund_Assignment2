@@ -48,7 +48,7 @@ char* decrypt_line (char line[], char key[]);
 void compress_db (char db_location[]);
 void decompres_db (char db_location[]);
 void save_db (char db_location[], login_t del_login[]);
-login_t load_db (char db_location[], login_t del_login[]);
+login_t* load_db (char db_location[], char master_pw[]);
 int valid_input (char input[]);
 
 /*******************************************************************************
@@ -485,7 +485,7 @@ void save_db (char db_location[], login_t del_login[])
  * outputs:
  * - login array
 *******************************************************************************/
-login_t load_db (char db_location[], login_t del_login[])
+login_t* load_db (char db_location[], char master_pw[])
 {
 	
 }
