@@ -57,6 +57,40 @@ int valid_input (char input[]);
 
 int main(void)
 {
+    int selection, exit =0;
+    char usr_input[256];
+
+    while(exit == 0)
+    {
+
+        print_main_menu();
+        fgets(usr_input, 10000, stdin);
+        sscanf(usr_input, "%d", &selection);
+
+        switch(selection)
+        {
+            case 1:
+
+            break;
+            case 2:
+                printf("Please enter search paramater>");
+                fgets(usr_input, 10000, stdin);
+                sscanf(usr_input, "%s", usr_input);
+                printf("\033[2J\033[H");
+                find_login(usr_input, logins_LL);
+            break;
+            case 3:
+            
+            break;
+            case 4:
+                exit = 1;
+            break;
+            default:
+            printf("Invalid choice\n");
+            break;
+
+        }
+    }
 
 }
 
@@ -108,6 +142,7 @@ void print_main_menu ()
 	printf("2: Search password\n");
 	printf("3: Save database\n");
 	printf("4: Quit\n");
+    printf("Enter choice (number between 1-4)> ");
 }
 
 /*******************************************************************************
@@ -286,12 +321,17 @@ void find_login(char seach[], login_t* logins_LL)
     display_login(*temp_login, 1);
     for(temp_login=logins_LL;temp_login!=NULL; temp_login=temp_login->login_n)
     {
-        if(strcmp(temp_login->name, seach) == 0)
+        if(strcmp("*", seach) == 0)
         {
             display_login(*temp_login, 0);
-
         }
-
+        else
+        {
+            if(strcmp(temp_login->name, seach) == 0)
+            {
+            display_login(*temp_login, 0);
+            }
+        }
     }
 
 
@@ -365,7 +405,6 @@ void display_login (login_t disp_login, int header)
         printf("%s", pw_spaces);
         printf("#\n");
     }
-    
     
     return;
 }
