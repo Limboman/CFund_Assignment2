@@ -38,7 +38,7 @@ struct login
 *******************************************************************************/
 char* user_initialisation (char mast_pw[], char db_location[]);
 void print_main_menu ();
-login_t add_login ();
+login_t* add_login ();
 login_t modify_login (login_t mod_login);
 void delete_login (login_t del_login);
 void find_login(char seach[]);
@@ -153,69 +153,70 @@ void print_main_menu ()
  * outputs:
  * - login structure variable
 *******************************************************************************/
-login_t add_login ()
+login_t* add_login ()
 {
-    login_t = add;
+    login_t* add;
+    add = (login_t *) malloc(sizeof(login_t));
     int i = 0;
     while (i < 5)
     {
-   	 while (i < 5)
-   	 {
-   	 printf("Enter name for where password will be used\n");
-   	 fgets(add.name, 10000, stdin);
-   	 if (valid_input(add.name) = 1);
-   	 {
-   		 i = i + 1;
-   	 }
-   	 else
-   	 {
-   		 break;
-   	 }
-   	 }
-   	 while (i < 5)
-   	 {
-   	 printf("Enter description for password\n");    
-   	 fgets(add.desc, 10000, stdin);
-   	 if (valid_input(add.desc) = 1);
-   	 {
-   	 i = i + 1;
-   	 }    
-   	 else
-   	 {
-   		 break;
-   	 }
-   	 }
-   	 while (i < 5)
-   	 {
-   	 printf("Enter Username\n");
-   	 fgets(add.user, 10000, stdin);
-   	 if (valid_input(add.user) = 1);
-   	 {
-   		 i = i + 1;
-   	 }
-   	 else
-   	 {
-   		 break;
-   	 }
-   	 }
-   	 while (i < 5)
-   	 {
-   	 printf("Enter password\n");
-   	 fgets(add.pw, 10000, stdin);
-   	 if (valid_input(add.pw) = 1);
-   	 {
-   		 i = i + 1;
-   	 }
-   	 else
-   	 {
-   		 break;
-   	 }
-   	 break;
-   	 }
-    if (i = 5)
-    {
-   	 printf("You have entered too many invalid inputs\n");
-    }
+        while (i < 5)
+        {
+            printf("Enter name for where password will be used\n");
+            fgets(add->name, 10000, stdin);
+            if (valid_input(add->name) == 1)
+            {
+                i = i + 1;
+            }
+            else
+            {
+                break;
+            }
+        }
+        while (i < 5)
+        {
+            printf("Enter description for password\n");    
+            fgets(add->desc, 10000, stdin);
+            if (valid_input(add->desc) == 1)
+            {
+                i = i + 1;
+            }    
+            else
+            {
+                break;
+            }
+        }
+        while (i < 5)
+        {
+            printf("Enter Username\n");
+            fgets(add->user, 10000, stdin);
+            if (valid_input(add->user) == 1)
+            {
+                i = i + 1;
+            }
+            else
+            {
+                break;
+            }
+        }
+        while (i < 5)
+        {
+            printf("Enter password\n");
+            fgets(add->pw, 10000, stdin);
+            if(valid_input(add->pw) == 1)
+            {
+                i = i + 1;
+            }
+            else
+            {
+                break;
+            }
+        break;
+        }
+        if (i == 5)
+        {
+            printf("You have entered too many invalid inputs\n");
+        }
     }
     return add;
 
@@ -502,18 +503,18 @@ int valid_input (char input[])
     int length = strlen(input);
     int i = 0;
     int flag = 0;
-    while (i < length - 1);
+    while (i < length - 1)
     {
-   	 if (input[i] < 31 || input[i] > 127)
-   	 {
-   		 flag = 1;
-   		 break
-   	 }
-    i = i + 1;
+    if (input[i] < 31 || input[i] > 127)
+    {
+        flag = 1;
+        break;
+    }
+    i++;
     }
     if (flag == 1)
     {
-   	 printf("Invalid input\n");
+     printf("Invalid input\n");
     }
     return flag;
 }
