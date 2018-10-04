@@ -18,6 +18,7 @@
 *******************************************************************************/
 
 #define MAX_STR_LEN 60
+#define MAX_TRIES 4
 
 /*******************************************************************************
  * List structs
@@ -38,6 +39,7 @@ struct login
 *******************************************************************************/
 char* user_initialisation (char mast_pw[], char db_location[]);
 void print_main_menu ();
+void print_find_menu ();
 login_t* add_login ();
 login_t modify_login (login_t mod_login);
 void delete_login (login_t del_login);
@@ -50,6 +52,7 @@ void decompres_db (char db_location[]);
 void save_db (char db_location[], char master_pw[], login_t* logins_LL);
 login_t* load_db (char db_location[], char master_pw[]);
 int valid_input (char input[]);
+void add_to_LL (login_t* logins_LL, login_t* login_add);
 
 /*******************************************************************************
  * Main
@@ -145,6 +148,14 @@ void print_main_menu ()
     printf("Enter choice (number between 1-4)> ");
 }
 
+void print_find_menu ()
+{
+    printf("1: Modify Login\n");
+    printf("2: Delete Login\n");
+    printf("3: Back to main menu\n");
+    printf("Enter choice (number between 1-3)> ");  
+}
+
 /*******************************************************************************
  * Author: Daniel
  * This function has the user enter a new login to be saved in the database
@@ -156,68 +167,75 @@ void print_main_menu ()
 login_t* add_login ()
 {
     login_t* add;
+    char usr_input[MAX_STR_LEN];
     add = (login_t *) malloc(sizeof(login_t));
     int i = 0;
-    while (i < 5)
+
+    printf("Enter name for where password will be used\n");
+    while (i < MAX_TRIES)
     {
-        while (i < 5)
+        fgets(usr_input, 10000, stdin);
+        sscanf(usr_input, "%s", usr_input);
+        if (valid_input(usr_input) == 0)
         {
-            printf("Enter name for where password will be used\n");
-            fgets(add->name, 10000, stdin);
-            if (valid_input(add->name) == 1)
-            {
-                i = i + 1;
-            }
-            else
-            {
-                break;
-            }
+            strcpy(add->name, usr_input);
+            break;
         }
-        while (i < 5)
+        else
         {
-            printf("Enter description for password\n");    
-            fgets(add->desc, 10000, stdin);
-            if (valid_input(add->desc) == 1)
-            {
-                i = i + 1;
-            }    
-            else
-            {
-                break;
-            }
-        }
-        while (i < 5)
-        {
-            printf("Enter Username\n");
-            fgets(add->user, 10000, stdin);
-            if (valid_input(add->user) == 1)
-            {
-                i = i + 1;
-            }
-            else
-            {
-                break;
-            }
-        }
-        while (i < 5)
-        {
-            printf("Enter password\n");
-            fgets(add->pw, 10000, stdin);
-            if(valid_input(add->pw) == 1)
-            {
-                i = i + 1;
-            }
-            else
-            {
-                break;
-            }
-        break;
-        }
-        if (i == 5)
-        {
-            printf("You have entered too many invalid inputs\n");
+            i++;
         }
     }
+    i = 0;
+
+    printf("Enter description for password\n");
+    while (i < MAX_TRIES)
+    {
+        fgets(usr_input, 10000, stdin);
+        sscanf(usr_input, "%s", usr_input);
+        if (valid_input(usr_input) == 0)
+        {
+            strcpy(add->desc, usr_input);
+            break;
+        }
+        else
+        {
+            i++;
+        }
+    }
+
+    printf("Enter Username\n");
+    while (i < MAX_TRIES)
+    {
+        fgets(usr_input, 10000, stdin);
+        sscanf(usr_input, "%s", usr_input);
+        if (valid_input(usr_input) == 0)
+        {
+            strcpy(add->user, usr_input);
+            break;
+        }
+        else
+        {
+            i++;
+        }
+    }
+
+    printf("Enter password\n");
+    while (i < MAX_TRIES)
+    {
+        fgets(usr_input, 10000, stdin);
+        sscanf(usr_input, "%s", usr_input);
+        if (valid_input(usr_input) == 0)
+        {
+            strcpy(add->pw, usr_input);
+            break;
+        }
+        else
+        {
+            i++;
+        }
+    }
+
     add->login_n = NULL;
     return add;
 
@@ -318,7 +336,12 @@ void delete_login (login_t del_login[])
 void find_login(char seach[], login_t* logins_LL)
 {
     login_t* temp_login;
+    login_t search_results[256];
     temp_login = (login_t *) malloc(sizeof(login_t));
+    int selection, exit = 0, num_results = 0;
+    char usr_input[256];
+
+    strcpy(search_results[0].name, "");
 
     display_login(*temp_login, 1);
     for(temp_login=logins_LL;temp_login!=NULL; temp_login=temp_login->login_n)
@@ -326,17 +349,75 @@ void find_login(char seach[], login_t* logins_LL)
         if(strcmp("*", seach) == 0)
         {
             display_login(*temp_login, 0);
+            search_results[num_results] = *temp_login;
+            num_results++;
         }
         else
         {
             if(strcmp(temp_login->name, seach) == 0)
             {
             display_login(*temp_login, 0);
+            search_results[num_results] = *temp_login;
+            num_results++;
             }
         }
     }
 
+    printf("\n");
 
+    if(num_results > 1)
+    {
+        while(exit == 0)
+        {
+            printf("Please enter the number of the login you want> ");
+            fgets(usr_input, 10000, stdin);
+            sscanf(usr_input, "%d", &selection);
+            if(selection <= num_results && selection > 0)
+            {
+                printf("\033[2J\033[H");
+                display_login(search_results[selection-1], 1);
+                display_login(search_results[selection-1], 0);
+                printf("\n");
+                exit = 1;
+            }
+            else
+            {
+                printf("Invalid selection\n");
+            }
+        }
+    }
+    
+
+    exit = 0;
+    print_find_menu();
+    while(exit == 0)
+    {
+        fgets(usr_input, 10000, stdin);
+        sscanf(usr_input, "%d", &selection);
+
+        switch(selection)
+        {
+            case 1:
+            
+            break;
+            case 2:
+            
+            break;
+            case 3:
+                printf("\033[2J\033[H");
+                exit = 1;
+            break;
+            default:
+                printf("Invalid choice\n");
+                printf("Enter choice (number between 1-3)> ");
+            break;
+
+        }
+
+
+    }
+
+    
     free(temp_login);
     temp_login = NULL;
     return;
@@ -518,4 +599,23 @@ int valid_input (char input[])
      printf("Invalid input\n");
     }
     return flag;
+}
+
+
+
+void add_to_LL (login_t* logins_LL, login_t* login_add)
+{
+    login_t* temp_login;
+    temp_login = (login_t *) malloc(sizeof(login_t));
+
+    for(temp_login=logins_LL;temp_login!=NULL; temp_login=temp_login->login_n)
+    {
+        if(temp_login->login_n == NULL)
+        {
+            temp_login->login_n = login_add;
+            break;
+        }
+
+    }
+    return;
 }
