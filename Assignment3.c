@@ -49,10 +49,11 @@ char* encrypt_line (char line[], char key[]);
 char* decrypt_line (char line[], char key[]);
 void compress_db (char db_location[]);
 void decompres_db (char db_location[]);
-void save_db (char db_location[], char master_pw[], login_t* logins_LL);
-login_t* load_db (char db_location[], char master_pw[]);
+void save_db (char db_location[], login_t* logins_LL, char key[]);
+login_t* load_db (char db_location[], char key[]);
 int valid_input (char input[]);
-void add_to_LL (login_t* logins_LL, login_t* login_add);
+login_t* add_to_LL (login_t* logins_LL, char name[MAX_STR_LEN], 
+    char desc[MAX_STR_LEN], char user[MAX_STR_LEN], char pw[MAX_STR_LEN]);
 
 /*******************************************************************************
  * Main
@@ -60,12 +61,15 @@ void add_to_LL (login_t* logins_LL, login_t* login_add);
 
 int main(void)
 {
-
-	login_t* temp_login;
+    login_t* temp_login;
     temp_login = (login_t *) malloc(sizeof(login_t));
+    int exit = 0;
+    int selection;
     char usr_input[256];
-    int selection, exit =0;
-    char usr_input[256];
+    char master_key[256] = {"A"};
+
+    login_t* logins_LL;
+    logins_LL = (login_t *) malloc(sizeof(login_t));
 
     printf("\033[2J\033[H");
 
@@ -82,7 +86,8 @@ int main(void)
                 temp_login = add_login();
                 if(temp_login->login_n == NULL)
                 {
-                    add_to_LL(logins_LL, temp_login);
+                    logins_LL = add_to_LL(logins_LL, temp_login->name,
+                        temp_login->desc, temp_login->user, temp_login->pw);
                 }
             break;
             case 2:
@@ -93,12 +98,14 @@ int main(void)
                 logins_LL = find_login(usr_input, logins_LL);
             break;
             case 3:
-            
+                save_db("database",logins_LL,master_key);
             break;
             case 4:
-                exit = 1;
-            break;
+                logins_LL = load_db("database", master_key);
+                /*exit = 1;*/
+                break;
             default:
+            printf("\033[2J\033[H");
             printf("Invalid choice\n");
             break;
 
@@ -108,7 +115,6 @@ int main(void)
     free(logins_LL);
     logins_LL = NULL;
     return 0;
-
 }
 
 /*******************************************************************************
@@ -649,9 +655,29 @@ void display_login (login_t disp_login, int header, int order)
  * outputs:
  * - encrypted string
 *******************************************************************************/
-char * encrypt_line (char line[], char key[])
+char* encrypt_line (char line[], char key[])
 {
-	
+    char* encrypted_line;
+    encrypted_line = (char *) malloc(sizeof(char[MAX_STR_LEN+1]));
+    
+    int encrypt_key=0;
+    int ii;
+
+    
+    for(ii=0;key[ii]!='\0';ii++)
+    {
+        encrypt_key = (int)key[ii] + encrypt_key;
+    }
+
+    for(ii=0;line[ii]!='\0';ii++)
+    {
+        encrypted_line[ii] = line[ii] + encrypt_key;
+    }
+
+    encrypted_line[MAX_STR_LEN+1] = '\0';
+
+    return encrypted_line;
+    
 }
 
 /*******************************************************************************
@@ -662,9 +688,28 @@ char * encrypt_line (char line[], char key[])
  * outputs:
  * - string
 *******************************************************************************/
-char * decrypt_line (char line[], char key[])
+char* decrypt_line (char line[], char key[])
 {
-	
+    char* decrypted_line;
+    decrypted_line = (char *) malloc(sizeof(char[MAX_STR_LEN+1]));
+
+    int encrypt_key=0;
+    int ii;
+
+    for(ii=0;key[ii] != '\0';ii++)
+    {
+        encrypt_key = (int)key[ii] + encrypt_key;
+    }
+
+    for(ii=0;line[ii] != '\0';ii++)
+    {
+        decrypted_line[ii] = line[ii] - encrypt_key;
+    }
+
+    decrypted_line[MAX_STR_LEN+1] = '\0';
+
+    return decrypted_line;
+    
 }
 
 /*******************************************************************************
@@ -701,9 +746,37 @@ void decompres_db (char db_location[])
  * outputs:
  * - none
 *******************************************************************************/
-void save_db (char db_location[], char master_pw[], login_t* logins_LL)
+void save_db (char db_location[], login_t* logins_LL, char key[])
 {
-	
+    char combined[MAX_STR_LEN*4];
+    FILE *fp;
+    fp = fopen(db_location, "w+");
+    login_t* temp_login;
+    temp_login = (login_t *) malloc(sizeof(login_t));
+    
+    fprintf(fp, "%s\n", encrypt_line("DATABASE_DECRYPTED", key));
+
+    for(temp_login=logins_LL;temp_login!=NULL; temp_login=temp_login->login_n)
+    {
+        strcpy(combined, "LOGIN");
+        strcat(combined, ",");
+        strcat(combined, temp_login->name);
+        strcat(combined, ",");
+        strcat(combined, temp_login->desc);
+        strcat(combined, ",");
+        strcat(combined, temp_login->user);
+        strcat(combined, ",");
+        strcat(combined, temp_login->pw);
+
+        strcpy(combined, encrypt_line(combined, key));
+
+        fprintf(fp,"%s\n", combined);
+
+    }
+
+    fclose(fp);
+
+    return;
 }
 
 /*******************************************************************************
@@ -714,9 +787,98 @@ void save_db (char db_location[], char master_pw[], login_t* logins_LL)
  * outputs:
  * - login array
 *******************************************************************************/
-login_t* load_db (char db_location[], char master_pw[])
+login_t* load_db (char db_location[], char key[])
 {
-	
+    char combined[MAX_STR_LEN*4], confirmation[MAX_STR_LEN];
+    char * token;
+    FILE *fp;
+    fp = fopen(db_location, "r");
+    login_t* logins_LL;
+    logins_LL = (login_t *) malloc(sizeof(login_t));
+    int end_of_file =0, ii=0, first_login=0;
+
+    fscanf(fp, "%s", confirmation);
+
+    while (end_of_file != EOF)
+    {
+        end_of_file = fscanf(fp, "%s", combined);
+        strcpy(combined, decrypt_line(combined, key));
+        token = strtok (combined,",");
+        if(strcmp(token, "LOGIN") == 0)
+        {
+            ii=0;
+            login_t* new_login;
+            new_login = (login_t *) malloc(sizeof(login_t));
+            while (token != NULL)
+            {
+                switch(ii)
+                {
+                    case 1:
+                        if(first_login == 0)
+                        {
+                            strcpy(logins_LL->name, token);
+                        }
+                        else
+                        {
+                            strcpy(new_login->name, token);
+                        }
+                        break;
+                    case 2:
+                        if(first_login == 0)
+                        {
+                            strcpy(logins_LL->desc, token);
+                        }
+                        else
+                        {
+                            strcpy(new_login->desc, token);
+                        }
+                        break;
+                    case 3:
+                        if(first_login == 0)
+                        {
+                            strcpy(logins_LL->user, token);
+                        }
+                        else
+                        {
+                            strcpy(new_login->user, token);
+                        }
+                        break;
+                    case 4:
+                        if(first_login == 0)
+                        {
+                            strcpy(logins_LL->pw, token);
+                        }
+                        else
+                        {
+                            strcpy(new_login->pw, token);
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                token = strtok (NULL, ",");
+                ii++;
+            }
+            if(first_login == 0)
+            {
+                logins_LL->login_n = NULL;
+                first_login = 1;
+                free(new_login);
+            }
+            else
+            {
+                new_login->login_n = NULL;
+                logins_LL = add_to_LL(logins_LL, new_login->name, 
+                    new_login->desc, new_login->user, new_login->pw);
+                free(new_login);
+            }
+
+        }
+        
+    }
+
+    fclose(fp);
+    return logins_LL;
 }
 
 /*******************************************************************************
@@ -749,12 +911,28 @@ int valid_input (char input[])
     return flag;
 }
 
+/*******************************************************************************
+ * Author: Cameron
+ * This function adds a new login to the linklist
+ * inputs:
+ * - the main linklist and the name, desc, user and pw of a new login
+ * outputs:
+ * - the pointer to the first node of the main linklist
+*******************************************************************************/
 
-
-void add_to_LL (login_t* logins_LL, login_t* login_add)
+login_t* add_to_LL (login_t* logins_LL, char name[MAX_STR_LEN], 
+    char desc[MAX_STR_LEN], char user[MAX_STR_LEN], char pw[MAX_STR_LEN])
 {
     login_t* temp_login;
     temp_login = (login_t *) malloc(sizeof(login_t));
+    login_t* login_add;
+    login_add = (login_t *) malloc(sizeof(login_t));
+    
+    strcpy(login_add->name, name);
+    strcpy(login_add->desc, desc);
+    strcpy(login_add->user, user);
+    strcpy(login_add->pw, pw);
+    login_add->login_n = NULL;
 
     for(temp_login=logins_LL;temp_login!=NULL; temp_login=temp_login->login_n)
     {
@@ -765,5 +943,5 @@ void add_to_LL (login_t* logins_LL, login_t* login_add)
         }
 
     }
-    return;
+    return logins_LL;
 }
