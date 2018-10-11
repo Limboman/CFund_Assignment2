@@ -30,7 +30,6 @@ struct login
     char user[MAX_STR_LEN];
     char pw[MAX_STR_LEN];
     struct login* login_n;
-
 }; typedef struct login login_t;
 
 
@@ -59,25 +58,164 @@ login_t* add_to_LL (login_t* logins_LL, char name[MAX_STR_LEN],
  * Main
 *******************************************************************************/
 
-int main(void)
+int main(int argc,char* argv[])
 {
     login_t* temp_login;
     temp_login = (login_t *) malloc(sizeof(login_t));
-    int exit = 0;
-    int selection;
-    char usr_input[256];
-    char master_key[256] = {"A"};
-
+    int quit = 0, selection, ii = 0, debug_mode = 0, j=0, database_exists =0;
+    char master_key[256] = {"A"}, usr_input[256], db_location[256];
+    char usr_key_input[256], confirmation[MAX_STR_LEN];
     login_t* logins_LL;
     logins_LL = (login_t *) malloc(sizeof(login_t));
 
+    if(argc >= 2)
+    {
+        for(ii=0;ii<argc;ii++)
+        {
+            if(strcmp(argv[ii], "-db") == 0)
+            {
+                strcpy(db_location, argv[ii+1]);
+            }
+            if(strcmp(argv[ii], "-debug") == 0)
+            {
+                debug_mode = 1;
+            }
+
+        }
+    }
+
+
+    FILE* fp = NULL;
+    fp = fopen(db_location, "r");
+    if (fp == NULL)
+    {
+            printf("Database selected doesn't exist, ");
+            printf("or there was no database selected\n");
+    }
+    else
+    {
+        database_exists = 1;
+        fclose(fp);
+    }
+    
+
+    if (database_exists == 1)
+    {
+        printf("The database selected is %s \n", db_location);
+        
+
+        while (j < MAX_TRIES)
+        {
+            printf("Please enter the master password for this database >");
+            fgets(usr_key_input, MAX_STR_LEN, stdin);
+            sscanf(usr_key_input, "%s", usr_key_input);
+
+            fp = fopen(db_location, "r");
+
+            fscanf(fp, "%s", confirmation);
+            fclose(fp);
+
+            strcpy(confirmation, decrypt_line(confirmation, usr_key_input));
+
+            if (strcmp(confirmation, "DATABASE_DECRYPTED") == 0)
+            {
+                printf("Correct password\n");
+                /* decrypt */
+                logins_LL = load_db(db_location, usr_key_input);
+                break;
+            }
+            else
+            {
+                printf("Incorrect password\n");
+                j++;
+            }
+
+        }
+        if (j == MAX_TRIES)
+        {
+            printf("Too many incorrect attempts, exiting program.\n");
+            exit(0);
+        }
+    }
+    else
+    {
+        j = 0;
+        while (j < MAX_TRIES)
+        {
+            printf("Enter new database name >");
+            /* database name */
+            fgets(db_location, MAX_STR_LEN, stdin);
+            sscanf(db_location, "%s", db_location);
+            /* create a database for given name */
+            fp = fopen(db_location, "r");
+            if ( fp == NULL)
+            {
+                /************************************/
+
+                printf("Enter master password for database >");
+                /* entered master password */
+                fgets(master_key, MAX_STR_LEN, stdin);
+                sscanf(master_key, "%s", master_key);
+                /* encrypt given master password */
+                /*********************************/
+                break;
+            }
+            else
+            {
+                printf("File already exists in location.\n");
+                j++;
+            }
+        }
+        
+        
+
+    }
+
+    
+
+    if(debug_mode == 1)
+    {
+        printf("DEBUG MODE ON \n");
+        login_t* logins_LL2;
+        logins_LL2 = (login_t *) malloc(sizeof(login_t));
+        login_t* logins_LL3;
+        logins_LL3 = (login_t *) malloc(sizeof(login_t));
+        login_t* logins_LL4;
+        logins_LL4 = (login_t *) malloc(sizeof(login_t));
+
+        strcpy(logins_LL->name, "G1");
+        strcpy(logins_LL->desc, "www.google.com");
+        strcpy(logins_LL->user, "cam");
+        strcpy(logins_LL->pw, "1234");
+        
+        logins_LL->login_n = logins_LL2;
+        strcpy(logins_LL2->name, "G2");
+        strcpy(logins_LL2->desc, "www.google.com");
+        strcpy(logins_LL2->user, "cam");
+        strcpy(logins_LL2->pw, "1234");
+        
+        logins_LL2->login_n = logins_LL3;
+        strcpy(logins_LL3->name, "G3");
+        strcpy(logins_LL3->desc, "www.google.com");
+        strcpy(logins_LL3->user, "MACCAM");
+        strcpy(logins_LL3->pw, "4321");
+        
+        logins_LL3->login_n = logins_LL4;
+        strcpy(logins_LL4->name, "G4");
+        strcpy(logins_LL4->desc, "www.google.com");
+        strcpy(logins_LL4->user, "mac");
+        strcpy(logins_LL4->pw, "qwerty");
+
+        logins_LL4->login_n = NULL;
+    }
+
     printf("\033[2J\033[H");
 
-    while(exit == 0)
+    while(quit == 0)
     {
 
         print_main_menu();
-        fgets(usr_input, 10000, stdin);
+        fgets(usr_input, MAX_STR_LEN, stdin);
         sscanf(usr_input, "%d", &selection);
 
         switch(selection)
@@ -86,23 +224,44 @@ int main(void)
                 temp_login = add_login();
                 if(temp_login->login_n == NULL)
                 {
+                    if(strcmp(logins_LL->name, "") == 0)
+                    {
+                        strcpy(logins_LL->name, temp_login->name);
+                        strcpy(logins_LL->desc, temp_login->desc);
+                        strcpy(logins_LL->user, temp_login->user);
+                        strcpy(logins_LL->pw, temp_login->pw);
+                    }
+                    else
+                    {
                     logins_LL = add_to_LL(logins_LL, temp_login->name,
                         temp_login->desc, temp_login->user, temp_login->pw);
+                    }
+                    
                 }
-            break;
+                break;
             case 2:
-                printf("Please enter search paramater or * for all>");
-                fgets(usr_input, 10000, stdin);
-                sscanf(usr_input, "%s", usr_input);
-                printf("\033[2J\033[H");
-                logins_LL = find_login(usr_input, logins_LL);
-            break;
+                if(strcmp(logins_LL->name, "") == 0)
+                {
+                    printf("Database is empty.\n");
+                }
+                else
+                {
+                    printf("Please enter search paramater or * for all>");
+                    fgets(usr_input, MAX_STR_LEN, stdin);
+                    sscanf(usr_input, "%s", usr_input);
+                    printf("\033[2J\033[H");
+                    logins_LL = find_login(usr_input, logins_LL);
+                }
+                break;
             case 3:
-                save_db("database",logins_LL,master_key);
-            break;
+                save_db(db_location, logins_LL, master_key);
+                break;
             case 4:
-                logins_LL = load_db("database", master_key);
-                /*exit = 1;*/
+                save_db(db_location, logins_LL, master_key);
+                quit = 1;
+                break;
+            case 5:
+                quit = 1;
                 break;
             default:
             printf("\033[2J\033[H");
@@ -111,45 +270,10 @@ int main(void)
 
         }
     }
-
     free(logins_LL);
     logins_LL = NULL;
     return 0;
 }
-
-/*******************************************************************************
- * Author: Bennett
- * This function has the user enter a database location and master password
- * inputs:
- * - master password
- * - database location
- * outputs:
- * - pointer to char array of first line of DB
-*******************************************************************************/
-
-char* user_initialisation (char mast_pw[], char db_location[])
-{ 
-int utpyold,utypnew;	
-printf("1.Old user\n2.New user");
-scanf("%d %d",&utpyold,&utypnew);
-/**/
-if(utpyold==1){
-/* if databases for storing user data exist print these*/
-	printf("1.Enter a database location");
-	printf("2.Enter the master password");
-    /*check if inut matches stored data*/
-	scanf("%c",[]);
-	scanf("%c",[]);
-}
-else {
-	printf("Incorrect input try again!") 
-	/* add option to try again, until the user selects the right option.*/;}
-}
-if(utypnew==2){ 
-	/*take them to create a login stage*/
-	;}
-else {/*stay on intial menu and ask for correct input.*/;}	
-
 
 /*******************************************************************************
  * Author: Daniel
@@ -161,11 +285,12 @@ else {/*stay on intial menu and ask for correct input.*/;}
 *******************************************************************************/
 void print_main_menu ()
 {
-	printf("1: Add password\n");
-	printf("2: Search password\n");
-	printf("3: Save database\n");
-	printf("4: Quit\n");
-    printf("Enter choice (number between 1-4)> ");
+    printf("1: Add password\n");
+    printf("2: Search password\n");
+    printf("3: Save database\n");
+    printf("4: Save and Quit\n");
+    printf("5: Quit\n");
+    printf("Enter choice (number between 1-5)> ");
 }
 
 void print_find_menu ()
@@ -197,7 +322,7 @@ login_t* add_login ()
         printf("Enter name for where password will be used\n");
         while (i < MAX_TRIES)
         {
-            fgets(usr_input, 10000, stdin);
+            fgets(usr_input, MAX_STR_LEN, stdin);
             sscanf(usr_input, "%s", usr_input);
             if (valid_input(usr_input) == 0)
             {
@@ -219,7 +344,7 @@ login_t* add_login ()
         printf("Enter description for password\n");
         while (i < MAX_TRIES)
         {
-            fgets(usr_input, 10000, stdin);
+            fgets(usr_input, MAX_STR_LEN, stdin);
             sscanf(usr_input, "%s", usr_input);
             if (valid_input(usr_input) == 0)
             {
@@ -241,7 +366,7 @@ login_t* add_login ()
         printf("Enter Username\n");
         while (i < MAX_TRIES)
         {
-            fgets(usr_input, 10000, stdin);
+            fgets(usr_input, MAX_STR_LEN, stdin);
             sscanf(usr_input, "%s", usr_input);
             if (valid_input(usr_input) == 0)
             {
@@ -263,7 +388,7 @@ login_t* add_login ()
         printf("Enter password\n");
         while (i < MAX_TRIES)
         {
-            fgets(usr_input, 10000, stdin);
+            fgets(usr_input, MAX_STR_LEN, stdin);
             sscanf(usr_input, "%s", usr_input);
             if (valid_input(usr_input) == 0)
             {
@@ -326,7 +451,7 @@ login_t* modify_login (login_t* logins_LL, login_t* mod_login)
     printf("3. Username\n");
     printf("4. Password\n");
     printf("5. Back\n");
-    fgets(input, 10000, stdin);
+    fgets(input, MAX_STR_LEN, stdin);
     sscanf(input, "%d", &select);
 
     
@@ -341,7 +466,7 @@ login_t* modify_login (login_t* logins_LL, login_t* mod_login)
              {
              case 1:
                  printf("Enter new Name\n");
-                 fgets(input, 10000, stdin);
+                 fgets(input, MAX_STR_LEN, stdin);
                  sscanf(input, "%s", input);
                  if (valid_input(input) == 0)
                  {
@@ -353,7 +478,7 @@ login_t* modify_login (login_t* logins_LL, login_t* mod_login)
 
              case 2:
                  printf("Enter new Description\n");
-                 fgets(input, 10000, stdin);
+                 fgets(input, MAX_STR_LEN, stdin);
                  sscanf(input, "%s", input);
                  if (valid_input(input) == 0)
                  {
@@ -365,7 +490,7 @@ login_t* modify_login (login_t* logins_LL, login_t* mod_login)
 
              case 3:
                  printf("Enter new Username\n");
-                 fgets(input, 10000, stdin);
+                 fgets(input, MAX_STR_LEN, stdin);
                  sscanf(input, "%s", input);
                  if (valid_input(input) == 0)
                  {
@@ -377,7 +502,7 @@ login_t* modify_login (login_t* logins_LL, login_t* mod_login)
 
              case 4:
                  printf("Enter new Password\n");
-                 fgets(input, 10000, stdin);
+                 fgets(input, MAX_STR_LEN, stdin);
                  sscanf(input, "%s", input);
                  if (valid_input(input) == 0)
                  {
@@ -505,7 +630,7 @@ login_t* find_login(char seach[], login_t* logins_LL)
         while(exit == 0)
         {
             printf("Please enter the number of the login you want> ");
-            fgets(usr_input, 10000, stdin);
+            fgets(usr_input, MAX_STR_LEN, stdin);
             sscanf(usr_input, "%d", &selection);
             if(selection <= num_results && selection > 0)
             {
@@ -532,7 +657,7 @@ login_t* find_login(char seach[], login_t* logins_LL)
     print_find_menu();
     while(exit == 0)
     {
-        fgets(usr_input, 10000, stdin);
+        fgets(usr_input, MAX_STR_LEN, stdin);
         sscanf(usr_input, "%d", &selection);
 
         switch(selection)
@@ -587,59 +712,25 @@ login_t* find_login(char seach[], login_t* logins_LL)
 *******************************************************************************/
 void display_login (login_t disp_login, int header, int order)
 {
-    char name_spaces[(11) - strlen(disp_login.name)];
-    char desc_spaces[(19) - strlen(disp_login.desc)];
-    char user_spaces[(17) - strlen(disp_login.user)];
-    char pw_spaces[(25) - strlen(disp_login.pw)];
-    int ii;
-    
-    for(ii=0;ii<((10) - strlen(disp_login.name));ii++)
-    {
-        name_spaces[ii] = ' ';
-    }
-    name_spaces[ii] = '\0';
-    
-    for(ii=0;ii<((18) - strlen(disp_login.desc));ii++)
-    {
-        desc_spaces[ii] = ' ';
-    }
-    desc_spaces[ii] = '\0';
-    
-    for(ii=0;ii<((16) - strlen(disp_login.user));ii++)
-    {
-        user_spaces[ii] = ' ';
-    }
-    user_spaces[ii] = '\0';
-    
-    for(ii=0;ii<((24) - strlen(disp_login.pw));ii++)
-    {
-        pw_spaces[ii] = ' ';
-    }
-    pw_spaces[ii] = '\0';
-    
-    
+                    
     if(header == 1)
     {
         printf("\n");
         printf("###############################################################"
-        "################\n");
-        printf("#   Name      # Desc              # Username        # Password"
+        "#################\n");
+        printf("#    Name      # Desc              # Username        # Password"
         "                #\n");
         printf("###############################################################"
-        "################\n");
+        "#################\n");
 
     }
     else
     {
-        printf("# %d.", order);
-        printf("%s", disp_login.name);
-        printf("%s", name_spaces);
-        printf("# %s", disp_login.desc);
-        printf("%s", desc_spaces);
-        printf("# %s", disp_login.user);
-        printf("%s", user_spaces);
-        printf("# %s", disp_login.pw);
-        printf("%s", pw_spaces);
+        printf("# %2d.", order);
+        printf("%-10.9s", disp_login.name);
+        printf("# %-18.17s", disp_login.desc);
+        printf("# %-16.15s", disp_login.user);
+        printf("# %-24.23s", disp_login.pw);
         printf("#\n");
     }
 
@@ -722,7 +813,7 @@ char* decrypt_line (char line[], char key[])
 *******************************************************************************/
 void compress_db (char db_location[])
 {
-	
+    
 }
 
 /*******************************************************************************
@@ -735,7 +826,7 @@ void compress_db (char db_location[])
 *******************************************************************************/
 void decompres_db (char db_location[])
 {
-	
+    
 }
 
 /*******************************************************************************
@@ -895,7 +986,7 @@ int valid_input (char input[])
     int length = strlen(input);
     int i = 0;
     int flag = 0;
-    while (i < length - 1)
+    while (i <= length - 1)
     {
     if (input[i] < 31 || input[i] > 127)
     {
