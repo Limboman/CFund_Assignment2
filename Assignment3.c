@@ -56,6 +56,7 @@ login_t* add_to_LL (login_t* logins_LL, char name[MAX_STR_LEN],
 
 /*******************************************************************************
  * Main
+ * Author: Cameron & Daniel
 *******************************************************************************/
 
 int main(int argc,char* argv[])
@@ -167,11 +168,7 @@ int main(int argc,char* argv[])
             }
         }
         
-        
-
     }
-
-    
 
     if(debug_mode == 1)
     {
@@ -302,7 +299,7 @@ void print_find_menu ()
 }
 
 /*******************************************************************************
- * Author: Daniel
+ * Author: Daniel & Cameron
  * This function has the user enter a new login to be saved in the database
  * inputs:
  * - 
@@ -406,7 +403,6 @@ login_t* add_login ()
             break;
         }
         break;
-
     }
 
     printf("\033[2J\033[H");
@@ -420,14 +416,12 @@ login_t* add_login ()
     {
         add->login_n = NULL;
     }
-
     return add;
-
 }
 
 
 /*******************************************************************************
- * Author: Daniel
+ * Author: Daniel & Cameron
  * This function takes a already exisiting login and allows the user to change
  * it and then saves the changed login.
  * inputs:
@@ -451,10 +445,10 @@ login_t* modify_login (login_t* logins_LL, login_t* mod_login)
     printf("3. Username\n");
     printf("4. Password\n");
     printf("5. Back\n");
+
     fgets(input, MAX_STR_LEN, stdin);
     sscanf(input, "%d", &select);
 
-    
 
     for(tmp_login=logins_LL;tmp_login!=NULL; tmp_login=tmp_login->login_n)
     {
@@ -519,13 +513,11 @@ login_t* modify_login (login_t* logins_LL, login_t* mod_login)
             }
         }
     }
-
     return mod_login;
 }
 
-
 /*******************************************************************************
- * Author: Bennett
+ * Author: Cameron
  * This function deletes a login from the main array
  * inputs:
  * - login structure variable
@@ -557,12 +549,10 @@ login_t* delete_login (login_t* logins_LL, login_t* del_login)
             prev_login = prev_login_temp;
             prev_login_temp = temp_login;
         }
-
         if(temp_login->login_n == del_login->login_n)
         {
             if(prev_login == prev_login_temp)
             {
-
                 login_t* temp = logins_LL;
                 temp = temp->login_n;
                 logins_LL = temp;
@@ -572,12 +562,9 @@ login_t* delete_login (login_t* logins_LL, login_t* del_login)
             {
                 prev_login->login_n = del_login->login_n;
                 break;
-            }
-            
+            }    
         }
-
     }
-
     return logins_LL;
 }
 
@@ -703,7 +690,7 @@ login_t* find_login(char seach[], login_t* logins_LL)
 }
 
 /*******************************************************************************
- * Author: Daniel
+ * Author: Cameron & Daniel
  * This function displays a single login on the console
  * inputs:
  * - login structure variable
@@ -830,7 +817,7 @@ void decompres_db (char db_location[])
 }
 
 /*******************************************************************************
- * Author: Bennett
+ * Author: Cameron
  * This function saves the encrpted logins array
  * inputs:
  * - database location, login array
@@ -871,7 +858,7 @@ void save_db (char db_location[], login_t* logins_LL, char key[])
 }
 
 /*******************************************************************************
- * Author: Bennett
+ * Author: Cameron
  * This function 
  * inputs:
  * - database location, login array
